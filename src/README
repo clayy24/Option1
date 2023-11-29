@@ -1,0 +1,13 @@
+Name: Clay Castronovo
+ASU ID: 1219845627
+
+Description: Program uses commands as listed in the Project Guidelines document.
+bchoc add -c case_id -i item_id [-i item_id ...]
+bchoc checkout -i item_id
+bchoc checkin -i item_id -n name -o org
+bchoc show cases
+bchoc show items -c case_id
+bchoc show history -i item_id -n num_entries
+bchoc remove -i item_id -y reason [-o owner]
+bchoc init
+bchoc verify
