@@ -179,7 +179,7 @@ class BlockchainBlock:
                 case_ids.append(block.case_id)
 
         for case_id in case_ids:
-            print("\t", case_id, sep="")
+            print(case_id)
 
     @classmethod
     def show_items(cls, case_id):
@@ -193,7 +193,7 @@ class BlockchainBlock:
                 items.append(block.evidence_item_id)
         
         for item in items:
-            print("\t", item, sep="")
+            print(item)
 
     @classmethod
     def show_history(cls, item_id, num_entries):
