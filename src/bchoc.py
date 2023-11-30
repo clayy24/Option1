@@ -204,6 +204,8 @@ class BlockchainBlock:
         
         if num_entries is None:
             num_entries = 999
+        else:
+            num_entries = int(num_entries)
         
         if item_id is not None:
             item_id = BlockchainBlock.valid_item_id(item_id)
