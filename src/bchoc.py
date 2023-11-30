@@ -204,6 +204,12 @@ class BlockchainBlock:
         
         if num_entries is None:
             num_entries = 999
+        
+        if item_id is not None:
+            item_id = BlockchainBlock.valid_item_id(item_id)
+        
+        if case_id is not None:
+            case_id = BlockchainBlock.valid_case_id(case_id)
             
         # item_id = BlockchainBlock.valid_item_id(item_id)
         counter = 0
@@ -214,7 +220,7 @@ class BlockchainBlock:
         # print("len blocks: ", len(blocks))
         
         for block in reversed(blocks):
-            if (block.evidence_item_id == item_id or item_id is None) and (block.case_id == case_id or case_id is None):
+            if (((block.evidence_item_id == item_id) or (item_id is None)) and ((block.case_id == case_id) or (case_id is None))):
                 counter += 1
                 print_blocks.append(block)
             if counter >= num_entries:
