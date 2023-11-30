@@ -220,12 +220,20 @@ class BlockchainBlock:
             if counter >= num_entries:
                 break
         
-        for block in reversed(print_blocks):
-            print("Case:", block.case_id)
-            print("Item:", block.evidence_item_id)
-            print("Action:", block.state)
-            print("Time:", block.getTime())
-            print("")
+        if not reverse:
+            for block in reversed(print_blocks):
+                print("Case:", block.case_id)
+                print("Item:", block.evidence_item_id)
+                print("Action:", block.state)
+                print("Time:", block.getTime())
+                print("")
+        else:
+            for block in (print_blocks):
+                print("Case:", block.case_id)
+                print("Item:", block.evidence_item_id)
+                print("Action:", block.state)
+                print("Time:", block.getTime())
+                print("")
 
     @classmethod
     def checkout(cls, item_id, owner, org):
