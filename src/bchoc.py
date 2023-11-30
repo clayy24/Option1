@@ -23,6 +23,7 @@ class BlockchainBlock:
     @classmethod
     def initialize_blockchain(cls):
         if cls.blockchain_file_exists():
+            BlockchainBlock.verify()
             print("Blockchain file found with INITIAL block.")
         else:
             initial_block = BlockchainBlock()
@@ -135,7 +136,7 @@ class BlockchainBlock:
                 file.seek(next_block_offset)
                 block_binary = file.read(0x74 + data_length)  # Adjust the size based on the maximum expected block size
                 if len(block_binary) != 0x74 + data_length:
-                    print("Error: Incomplete block data in the file.")
+                    display_error(11)
                     break
 
                 block = cls.from_binary(block_binary)
@@ -173,11 +174,10 @@ class BlockchainBlock:
         blocks = BlockchainBlock.read_blocks_from_file()
         case_ids = []
 
-        for block in blocks:
+        for block in blocks[1:]:
             if block.case_id not in case_ids:
                 case_ids.append(block.case_id)
 
-        print("case-no")
         for case_id in case_ids:
             print("\t", case_id, sep="")
 
@@ -192,7 +192,6 @@ class BlockchainBlock:
             if block.case_id == case_id and block.evidence_item_id not in items:
                 items.append(block.evidence_item_id)
         
-        print("item-no")
         for item in items:
             print("\t", item, sep="")
 
@@ -325,6 +324,11 @@ class BlockchainBlock:
         previous_parents = []
         removed_ids = []
 
+        init = BlockchainBlock()
+
+        if blocks[0].state != init.state:
+            display_error(10)
+
         print("Transactions in blockchain:", len(blocks))
 
         for block in blocks:
@@ -415,6 +419,8 @@ def display_error(exit_code):
         7: "Owner is required if removing item for being RELEASED",
         8: "Verification Error",
         9: "Tried to check in item before adding it",
+        10: "Invalid Initial block",
+        11: "Error: Incomplete block data in the file.",
     }
 
     print(f"Error ({exit_code}): {error_messages.get(exit_code, 'Unknown error')}")
