@@ -453,6 +453,7 @@ def display_error(exit_code):
         9: "Tried to check in item before adding it",
         10: "Invalid Initial block",
         11: "Error: Incomplete block data in the file.",
+        12: "Incorrect choice",
     }
 
     print(f"Error ({exit_code}): {error_messages.get(exit_code, 'Unknown error')}")
@@ -498,7 +499,10 @@ if __name__ == "__main__":
 
     parser_verify = subparsers.add_parser("verify", help="Verify the integrity of the blockchain")
 
-    args = parser.parse_args()
+    try:
+        args = parser.parse_args()
+    except argparse.ArgumentError as e:
+        display_error(12)
 
     if args.subcommand == "add":
         add_evidence_to_blockchain(args.case_id, args.item_id, args.owner, args.org)
