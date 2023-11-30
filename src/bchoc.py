@@ -325,7 +325,7 @@ class BlockchainBlock:
                     print(f"State of blockchain: {state}")
                     print("Bad block:", block.calculate_hash())
                     print("Block contents do not match block checksum")
-                    break
+                    display_error(8)
                 
             # check for duplicate parents
             if block.previous_hash in previous_parents:
@@ -334,6 +334,7 @@ class BlockchainBlock:
                 print("Bad block:", block.calculate_hash())
                 print("Parent block:", block.previous_hash)
                 print("Two blocks were found with the same parent.")
+                display_error(8)
             else:
                 previous_parents.append(block.previous_hash)
                 
@@ -343,6 +344,7 @@ class BlockchainBlock:
                 print(f"State of blockchain: {state}")
                 print("Bad block:", block.calculate_hash())
                 print("Item checked out or checked in after removal from chain.")
+                display_error(8)
             if block.state in ["DISPOSED", "DESTROYED", "RELEASED"]:
                 removed_ids.append(block.evidence_item_id)
 
@@ -352,6 +354,7 @@ class BlockchainBlock:
                 print(f"State of blockchain: {state}")
                 print("Bad block:", block.calculate_hash())
                 print("Parent block: NOT FOUND")
+                display_error(8)
             previous_block = block
 
         if state == "CLEAN":
@@ -378,7 +381,7 @@ def add_evidence_to_blockchain(case_id, item_ids, name, org):
         block.case_id = case_id
         block.evidence_item_id = item_id
         block.state = "CHECKEDIN"
-        block.data = "None"
+        block.data = ""
         block.data_length = len(block.data)
         block.handler_name = name[:20]
         block.organization_name = org[:20]
@@ -399,7 +402,8 @@ def display_error(exit_code):
         3: "Item ID must be an integer.",
         4: "Case ID must be a valid UUID.",
         5: "Item was not in the correct state for that action to be performed.",
-        7: "Owner is required if removing item for being RELEASED", 
+        7: "Owner is required if removing item for being RELEASED",
+        8: "Verification Error",
     }
 
     print(f"Error ({exit_code}): {error_messages.get(exit_code, 'Unknown error')}")
