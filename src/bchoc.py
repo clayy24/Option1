@@ -76,7 +76,7 @@ class BlockchainBlock:
         data_length_bytes = struct.pack("I", self.data_length)
 
         # Convert data to bytes or use null bytes if it's None
-        data_bytes = struct.pack(f"{len(self.data) + 1}s", self.data.encode())
+        data_bytes = struct.pack(f"{self.data_length}s", self.data.encode())
 
 
         return (
@@ -233,7 +233,7 @@ class BlockchainBlock:
                     new_block.case_id = block.case_id
                     new_block.evidence_item_id = item_id
                     new_block.state = "CHECKEDOUT"
-                    new_block.data = "None"
+                    new_block.data = ""
                     new_block.data_length = len(new_block.data)
                     new_block.handler_name = owner[:20]
                     new_block.organization_name = org[:20]
@@ -263,7 +263,7 @@ class BlockchainBlock:
                     new_block.case_id = block.case_id
                     new_block.evidence_item_id = item_id
                     new_block.state = "CHECKEDIN"
-                    new_block.data = "None"
+                    new_block.data = ""
                     new_block.data_length = len(new_block.data)
                     new_block.handler_name = name[:19]
                     new_block.organization_name = org[:19]
@@ -293,7 +293,7 @@ class BlockchainBlock:
                     new_block.case_id = block.case_id
                     new_block.evidence_item_id = item_id
                     new_block.state = reason
-                    new_block.data = "None"
+                    new_block.data = ""
                     new_block.data_length = len(new_block.data)
                     new_block.handler_name = block.handler_name if owner is None else owner[:19]
                     new_block.organization_name = block.organization_name
@@ -436,9 +436,9 @@ if __name__ == "__main__":
     parser_checkout.add_argument("-h", "--owner")
     parser_checkout.add_argument("-o", "--org")
 
-    parser_checkin = subparsers.add_parser("checkin", help="Checkin an evidence item")
+    parser_checkin = subparsers.add_parser("checkin", help="Checkin an evidence item", add_help=False)
     parser_checkin.add_argument("-i", "--item_id", required=True, type=int, help="Item identifier")
-    parser_checkin.add_argument("-n", "--name", required=True, help="Handler name")
+    parser_checkin.add_argument("-h", "--owner", required=True, help="Handler name")
     parser_checkin.add_argument("-o", "--org", required=True, help="Organization name")
 
     parser_remove = subparsers.add_parser("remove", help="Prevents any further action from being taken on the evidence item specified")
@@ -469,8 +469,8 @@ if __name__ == "__main__":
         BlockchainBlock.show_history(args.item_id, args.num_entries)
     elif args.subcommand == "checkout" and args.item_id:
         BlockchainBlock.checkout(args.item_id, args.owner, args.org)
-    elif args.subcommand == "checkin" and args.item_id and args.name and args.org:
-        BlockchainBlock.checkin(args.item_id, args.name, args.org)
+    elif args.subcommand == "checkin" and args.item_id:
+        BlockchainBlock.checkin(args.item_id, args.owner, args.org)
     elif args.subcommand == "remove" and args.item_id and args.why:
         if args.why == "RELEASED" and args.owner is None:
             display_error(7)
