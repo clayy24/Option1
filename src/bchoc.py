@@ -330,7 +330,7 @@ class BlockchainBlock:
                     new_block.evidence_item_id = item_id
                     new_block.state = reason
                     new_block.data = "" if owner is None else owner
-                    new_block.data_length = len(new_block.data)
+                    new_block.data_length = len(new_block.data) + (len(new_block.data) % 2)
                     new_block.handler_name = block.handler_name
                     new_block.organization_name = block.organization_name
 
@@ -355,12 +355,17 @@ class BlockchainBlock:
 
         init = BlockchainBlock()
 
-        if blocks[0].state != init.state:
-            display_error(10)
+        try:
+            if blocks[0].state != init.state:
+                display_error(10)
+        except IndexError:
+            display_error(13)
 
         print("Transactions in blockchain:", len(blocks))
 
         for block in blocks:
+            if block.state not in ["CHECKEDIN", "CHECKEDOUT", "DISPOSED", "DESTROYED", "RELEASED"]:
+                display_error(12)
             # check for valid checksums
             if previous_block is not None:
                 if previous_block.calculate_hash() != block.previous_hash:
@@ -454,6 +459,7 @@ def display_error(exit_code):
         10: "Invalid Initial block",
         11: "Error: Incomplete block data in the file.",
         12: "Incorrect choice",
+        13: "Verification error",
     }
 
     print(f"Error ({exit_code}): {error_messages.get(exit_code, 'Unknown error')}")
