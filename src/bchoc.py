@@ -38,7 +38,10 @@ class BlockchainBlock:
         return hashlib.sha256(self.to_binary()).hexdigest()
     
     def getTime(self):
-        return datetime.datetime.utcfromtimestamp(self.timestamp)
+        a = str(datetime.datetime.utcfromtimestamp(self.timestamp))
+        a = a.replace(' ', "T")
+        a = a + "Z"
+        return a
     
     def display_block(self):
         print(f"Previous Hash: {self.previous_hash or None}")
@@ -218,7 +221,11 @@ class BlockchainBlock:
                 break
         
         for block in reversed(print_blocks):
-            print(block.getTime(), block.handler_name, block.state)
+            print("Case:", block.case_id)
+            print("Item:", block.evidence_item_id)
+            print("Action:", block.state)
+            print("Time:", block.getTime())
+            print("")
 
     @classmethod
     def checkout(cls, item_id, owner, org):
