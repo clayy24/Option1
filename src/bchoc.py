@@ -199,7 +199,7 @@ class BlockchainBlock:
             print(item)
 
     @classmethod
-    def show_history(cls, item_id, num_entries, reverse):
+    def show_history(cls, item_id, num_entries, reverse, case_id):
         blocks = BlockchainBlock.read_blocks_from_file()
         
         if num_entries is None:
@@ -214,7 +214,7 @@ class BlockchainBlock:
         # print("len blocks: ", len(blocks))
         
         for block in reversed(blocks):
-            if block.evidence_item_id == item_id or item_id is None:
+            if (block.evidence_item_id == item_id or item_id is None) and (block.case_id == case_id or case_id is None):
                 counter += 1
                 print_blocks.append(block)
             if counter >= num_entries:
@@ -504,7 +504,7 @@ if __name__ == "__main__":
     elif args.subcommand == "show" and args.show_type == "items":
         BlockchainBlock.show_items(args.case_id)
     elif args.subcommand == "show" and args.show_type == "history":
-        BlockchainBlock.show_history(args.item_id, args.num_entries, args.reverse)
+        BlockchainBlock.show_history(args.item_id, args.num_entries, args.reverse, args.case_id)
     elif args.subcommand == "checkout" and args.item_id:
         BlockchainBlock.checkout(args.item_id, args.owner, args.org)
     elif args.subcommand == "checkin" and args.item_id:
