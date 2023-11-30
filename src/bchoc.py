@@ -476,7 +476,7 @@ if __name__ == "__main__":
     parser_add.add_argument("-c", "--case_id", required=True, help="Case identifier")
     parser_add.add_argument("-h", "--owner", help="Case identifier")
     parser_add.add_argument("-o", "--org", help="Case identifier")
-    parser_add.add_argument("-i", "--item_id", nargs="+", required=True, help="Evidence item identifier(s)")
+    parser_add.add_argument("-i", "--item_id", action='append', required=True, help="Evidence item identifier(s)")
 
 
     parser_init = subparsers.add_parser("init", help="Initialize the blockchain")
@@ -511,6 +511,7 @@ if __name__ == "__main__":
         display_error(12)
 
     if args.subcommand == "add":
+        print(args.item_id)
         add_evidence_to_blockchain(args.case_id, args.item_id, args.owner, args.org)
     elif args.subcommand == "show" and args.show_type == "all":
         if not BlockchainBlock.blockchain_file_exists():
