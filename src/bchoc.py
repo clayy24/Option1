@@ -364,7 +364,7 @@ class BlockchainBlock:
         print("Transactions in blockchain:", len(blocks))
 
         for block in blocks:
-            if block.state not in ["CHECKEDIN", "CHECKEDOUT", "DISPOSED", "DESTROYED", "RELEASED"]:
+            if block.state not in ["INITIAL", "CHECKEDIN", "CHECKEDOUT", "DISPOSED", "DESTROYED", "RELEASED"]:
                 display_error(12)
             # check for valid checksums
             if previous_block is not None:
