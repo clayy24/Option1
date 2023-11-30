@@ -196,24 +196,29 @@ class BlockchainBlock:
             print(item)
 
     @classmethod
-    def show_history(cls, item_id, num_entries):
-        item_id = BlockchainBlock.valid_item_id(item_id)
+    def show_history(cls, item_id, num_entries, reverse):
+        blocks = BlockchainBlock.read_blocks_from_file()
+        
+        if num_entries is None:
+            num_entries = 999
+            
+        # item_id = BlockchainBlock.valid_item_id(item_id)
         counter = 0
 
-        blocks = BlockchainBlock.read_blocks_from_file()
+
         print_blocks = []
 
-        print("len blocks: ", len(blocks))
+        # print("len blocks: ", len(blocks))
         
         for block in reversed(blocks):
-            if block.evidence_item_id == item_id:
+            if block.evidence_item_id == item_id or item_id is None:
                 counter += 1
                 print_blocks.append(block)
             if counter >= num_entries:
                 break
         
         for block in reversed(print_blocks):
-            print(block.getTime(), block.handler_name, block.state, sep="  ")
+            print(block.getTime(), block.handler_name, block.state)
 
     @classmethod
     def checkout(cls, item_id, owner, org):
@@ -445,8 +450,9 @@ if __name__ == "__main__":
     parser_show = subparsers.add_parser("show", help="Show cases or items")
     parser_show.add_argument("show_type", choices=["cases", "items", "all", "history"], help="Specify 'cases', 'items', 'history', or 'all'")
     parser_show.add_argument("-c", "--case_id", help="Case identifier (required for 'items')")
-    parser_show.add_argument("-i", "--item_id", type=int, help="Item identifier")
-    parser_show.add_argument("-n", "--num_entries", type=int, help="Shows {num_entries} number of block entries")
+    parser_show.add_argument("-r", "--reverse", action="store_true", help="Case identifier (required for 'items')")
+    parser_show.add_argument("-i", "--item_id", help="Item identifier")
+    parser_show.add_argument("-n", "--num_entries", help="Shows {num_entries} number of block entries")
 
     parser_checkout = subparsers.add_parser("checkout", help="Checkout an evidence item", add_help=False)
     parser_checkout.add_argument("-i", "--item_id", type=int, required=True, help="Item identifier")
@@ -482,8 +488,8 @@ if __name__ == "__main__":
         BlockchainBlock.show_cases()
     elif args.subcommand == "show" and args.show_type == "items":
         BlockchainBlock.show_items(args.case_id)
-    elif args.subcommand == "show" and args.show_type == "history" and args.item_id and args.num_entries:
-        BlockchainBlock.show_history(args.item_id, args.num_entries)
+    elif args.subcommand == "show" and args.show_type == "history":
+        BlockchainBlock.show_history(args.item_id, args.num_entries, args.reverse)
     elif args.subcommand == "checkout" and args.item_id:
         BlockchainBlock.checkout(args.item_id, args.owner, args.org)
     elif args.subcommand == "checkin" and args.item_id:
