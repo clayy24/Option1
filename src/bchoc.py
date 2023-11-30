@@ -258,7 +258,7 @@ class BlockchainBlock:
                 else:
                     new_block = BlockchainBlock()
                     b1 = BlockchainBlock.read_blocks_from_file()
-                    new_block.previous_hash = b1[-1].calculate_hash()
+                    new_block.previous_hash = b'\x00' * 32
                     new_block.case_id = block.case_id
                     new_block.evidence_item_id = item_id
                     new_block.state = "CHECKEDOUT"
@@ -291,14 +291,14 @@ class BlockchainBlock:
                 else:
                     new_block = BlockchainBlock()
                     b1 = BlockchainBlock.read_blocks_from_file()
-                    new_block.previous_hash = b1[-1].calculate_hash()
+                    new_block.previous_hash = b'\x00' * 32
                     new_block.case_id = block.case_id
                     new_block.evidence_item_id = item_id
                     new_block.state = "CHECKEDIN"
                     new_block.data = ""
                     new_block.data_length = len(new_block.data)
-                    new_block.handler_name = name[:19]
-                    new_block.organization_name = org[:19]
+                    new_block.handler_name = name[:20]
+                    new_block.organization_name = org[:20]
 
                     new_block.write_to_file()
 
@@ -325,13 +325,13 @@ class BlockchainBlock:
                 else:
                     new_block = BlockchainBlock()
                     b1 = BlockchainBlock.read_blocks_from_file()
-                    new_block.previous_hash = b1[-1].calculate_hash()
+                    new_block.previous_hash = b'\x00' * 32
                     new_block.case_id = block.case_id
                     new_block.evidence_item_id = item_id
                     new_block.state = reason
-                    new_block.data = ""
+                    new_block.data = "" if owner is None else owner
                     new_block.data_length = len(new_block.data)
-                    new_block.handler_name = block.handler_name if owner is None else owner[:19]
+                    new_block.handler_name = block.handler_name
                     new_block.organization_name = block.organization_name
 
                     new_block.write_to_file()
@@ -420,7 +420,7 @@ def add_evidence_to_blockchain(case_id, item_ids, name, org):
         block = BlockchainBlock()
 
         b1 = BlockchainBlock.read_blocks_from_file()
-        if b1[-1].state == "INITIAL":
+        if True:
             block.previous_hash = b'\x00' * 32
         else:
             block.previous_hash = b1[-1].calculate_hash()
