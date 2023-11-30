@@ -65,6 +65,7 @@ class BlockchainBlock:
 
         # Convert case_id to bytes or use null bytes if it's None
         case_id_bytes = self.case_id.bytes
+        case_id_bytes = self.case_id.int.to_bytes(16, byteorder='little')
 
         evidence_item_id_bytes = struct.pack("I", self.evidence_item_id) if self.evidence_item_id is not None else b'\x00' * 4
 
@@ -114,7 +115,7 @@ class BlockchainBlock:
         ) = struct.unpack("32s d 16s I 12s 20s 20s I", block_binary[:116])
 
         block.previous_hash = block.previous_hash.hex()
-        block.case_id = uuid.UUID(block.case_id.hex())
+        block.case_id = uuid.UUID(int=int.from_bytes(block.case_id, byteorder='little'))
         block.state = block.state.rstrip(b'\x00').decode()
         block.handler_name = block.handler_name.decode()
         block.organization_name = block.organization_name.decode()
@@ -419,7 +420,10 @@ def add_evidence_to_blockchain(case_id, item_ids, name, org):
         block = BlockchainBlock()
 
         b1 = BlockchainBlock.read_blocks_from_file()
-        block.previous_hash = b1[-1].calculate_hash()
+        if b1[-1].state == "INITIAL":
+            block.previous_hash = b'\x00' * 32
+        else:
+            block.previous_hash = b1[-1].calculate_hash()
         block.case_id = case_id
         block.evidence_item_id = item_id
         block.state = "CHECKEDIN"
