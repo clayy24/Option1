@@ -217,7 +217,7 @@ class BlockchainBlock:
             print(block.getTime(), block.handler_name, block.state, sep="  ")
 
     @classmethod
-    def checkout(cls, item_id):
+    def checkout(cls, item_id, owner, org):
         item_id = BlockchainBlock.valid_item_id(item_id)
 
         blocks = BlockchainBlock.read_blocks_from_file()
@@ -235,8 +235,8 @@ class BlockchainBlock:
                     new_block.state = "CHECKEDOUT"
                     new_block.data = "None"
                     new_block.data_length = len(new_block.data)
-                    new_block.handler_name = block.handler_name
-                    new_block.organization_name = block.organization_name
+                    new_block.handler_name = owner[:20]
+                    new_block.organization_name = org[:20]
 
                     new_block.write_to_file()
 
@@ -431,8 +431,10 @@ if __name__ == "__main__":
     parser_show.add_argument("-i", "--item_id", type=int, help="Item identifier")
     parser_show.add_argument("-n", "--num_entries", type=int, help="Shows {num_entries} number of block entries")
 
-    parser_checkout = subparsers.add_parser("checkout", help="Checkout an evidence item")
+    parser_checkout = subparsers.add_parser("checkout", help="Checkout an evidence item", add_help=False)
     parser_checkout.add_argument("-i", "--item_id", type=int, required=True, help="Item identifier")
+    parser_checkout.add_argument("-h", "--owner")
+    parser_checkout.add_argument("-o", "--org")
 
     parser_checkin = subparsers.add_parser("checkin", help="Checkin an evidence item")
     parser_checkin.add_argument("-i", "--item_id", required=True, type=int, help="Item identifier")
@@ -466,7 +468,7 @@ if __name__ == "__main__":
     elif args.subcommand == "show" and args.show_type == "history" and args.item_id and args.num_entries:
         BlockchainBlock.show_history(args.item_id, args.num_entries)
     elif args.subcommand == "checkout" and args.item_id:
-        BlockchainBlock.checkout(args.item_id)
+        BlockchainBlock.checkout(args.item_id, args.owner, args.org)
     elif args.subcommand == "checkin" and args.item_id and args.name and args.org:
         BlockchainBlock.checkin(args.item_id, args.name, args.org)
     elif args.subcommand == "remove" and args.item_id and args.why:
