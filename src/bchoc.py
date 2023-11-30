@@ -219,11 +219,12 @@ class BlockchainBlock:
     @classmethod
     def checkout(cls, item_id, owner, org):
         item_id = BlockchainBlock.valid_item_id(item_id)
-
         blocks = BlockchainBlock.read_blocks_from_file()
+        found = False
 
         for block in reversed(blocks):
             if block.evidence_item_id == item_id:
+                found = True
                 if block.state in ["CHECKEDOUT", "DISPOSED", "DESTROYED", "RELEASED"]:
                     display_error(5)
                 else:
@@ -245,15 +246,18 @@ class BlockchainBlock:
                     print("\tStatus:", new_block.state)
                     print("\tTime of action:", new_block.getTime())
                     break
+        if not found:
+            display_error(9)
 
     @classmethod
     def checkin(cls, item_id, name, org):
         item_id = BlockchainBlock.valid_item_id(item_id)
-
         blocks = BlockchainBlock.read_blocks_from_file()
+        found = False
 
         for block in reversed(blocks):
             if block.evidence_item_id == item_id:
+                found = True
                 if block.state in ["CHECKEDIN", "DISPOSED", "DESTROYED", "RELEASED"]:
                     display_error(5)
                 else:
@@ -276,14 +280,18 @@ class BlockchainBlock:
                     print("\tTime of action:", new_block.getTime())
                     break
 
+        if not found:
+            display_error(9)
+
     @classmethod
     def remove(cls, item_id, reason, owner=None):
         item_id = BlockchainBlock.valid_item_id(item_id)
-
         blocks = BlockchainBlock.read_blocks_from_file()
+        found = False
 
         for block in reversed(blocks):
             if block.evidence_item_id == item_id:
+                found = True
                 if block.state in ["CHECKEDOUT", "DISPOSED", "DESTROYED", "RELEASED"]:
                     display_error(5)
                 else:
@@ -306,6 +314,8 @@ class BlockchainBlock:
                     print("\tOwner info:", new_block.handler_name)
                     print("\tTime of action:", new_block.getTime())
                     break
+        if not found:
+            display_error(9)
 
     @classmethod
     def verify(cls):
@@ -404,6 +414,7 @@ def display_error(exit_code):
         5: "Item was not in the correct state for that action to be performed.",
         7: "Owner is required if removing item for being RELEASED",
         8: "Verification Error",
+        9: "Tried to check in item before adding it",
     }
 
     print(f"Error ({exit_code}): {error_messages.get(exit_code, 'Unknown error')}")
