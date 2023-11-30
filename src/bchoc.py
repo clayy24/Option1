@@ -17,7 +17,7 @@ class BlockchainBlock:
         self.state = "INITIAL"
         self.handler_name = None
         self.organization_name = None
-        self.data_length = 13
+        self.data_length = 14
         self.data = "Initial block"
 
     @classmethod
@@ -65,7 +65,7 @@ class BlockchainBlock:
         evidence_item_id_bytes = struct.pack("I", self.evidence_item_id) if self.evidence_item_id is not None else b'\x00' * 4
 
         # Convert state to bytes or use null bytes if it's None
-        state_bytes = struct.pack("12s", self.state.encode('utf-8')) if self.state else b'\x00' * 12
+        state_bytes = struct.pack("12s", self.state.encode('utf-8'))
 
         # Convert handler_name to bytes or use null bytes if it's None
         handler_name_bytes = struct.pack("20s", self.handler_name.encode('utf-8')) if self.handler_name else b'\x00' * 20
@@ -76,8 +76,7 @@ class BlockchainBlock:
         data_length_bytes = struct.pack("I", self.data_length)
 
         # Convert data to bytes or use null bytes if it's None
-        data_bytes = struct.pack(f"{len(self.data)}s", self.data.encode())
-
+        data_bytes = struct.pack(f"{len(self.data) + 1}s", self.data.encode())
 
 
         return (
@@ -358,9 +357,9 @@ class BlockchainBlock:
         if state == "CLEAN":
             print(f"State of blockchjain: {state}")
 
-def add_evidence_to_blockchain(case_id, item_ids):
+def add_evidence_to_blockchain(case_id, item_ids, name, org):
     if not BlockchainBlock.blockchain_file_exists():
-        display_error(1)
+        BlockchainBlock.initialize_blockchain()
 
     case_id = BlockchainBlock.valid_case_id(case_id)
 
@@ -381,7 +380,8 @@ def add_evidence_to_blockchain(case_id, item_ids):
         block.state = "CHECKEDIN"
         block.data = "None"
         block.data_length = len(block.data)
-        block.handler_name = "John Doe"
+        block.handler_name = name[:20]
+        block.organization_name = org[:20]
 
         block.write_to_file()
 
@@ -408,13 +408,16 @@ def display_error(exit_code):
 if __name__ == "__main__":
     filename = os.environ.get("BCHOC_FILE_PATH", 'output')
 
-    parser = argparse.ArgumentParser(description="Blockchain Evidence Item Management")
+    parser = argparse.ArgumentParser(description="Blockchain Evidence Item Management", add_help=False)
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
     # Subparser for the 'add' command
-    parser_add = subparsers.add_parser("add", help="Add a new evidence item to the blockchain")
+    parser_add = subparsers.add_parser("add", help="Add a new evidence item to the blockchain", add_help=False)
     parser_add.add_argument("-c", "--case_id", required=True, help="Case identifier")
+    parser_add.add_argument("-h", "--owner", help="Case identifier")
+    parser_add.add_argument("-o", "--org", help="Case identifier")
     parser_add.add_argument("-i", "--item_id", nargs="+", required=True, help="Evidence item identifier(s)")
+
 
     parser_init = subparsers.add_parser("init", help="Initialize the blockchain")
 
@@ -442,7 +445,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.subcommand == "add":
-        add_evidence_to_blockchain(args.case_id, args.item_id)
+        add_evidence_to_blockchain(args.case_id, args.item_id, args.owner, args.org)
     elif args.subcommand == "show" and args.show_type == "all":
         if not BlockchainBlock.blockchain_file_exists():
             display_error(1)
